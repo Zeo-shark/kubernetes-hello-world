@@ -1,0 +1,41 @@
+# ops/tasks/dev.yml
+version: '3'
+
+tasks:
+  default:
+    desc: Start development in background (docker-compose up -d)
+    cmds:
+      - task: up
+
+  init:
+    desc: Initialize development environment (build image, create containers)
+    cmds:
+      # Prepend with ":" to call a task in the root namespace
+      - task: :build:dev-local
+      - task: up-attached
+
+  up-detached:
+    aliases: [up]
+    desc: Start development
+    cmds:
+      - docker-compose up -d {{.CLI_ARGS}}
+
+  up-attached:
+    desc: Start development
+    cmds:
+      - docker-compose up {{.CLI_ARGS}}
+
+  down:
+    desc: Stop development environment
+    cmds:
+      - docker-compose down {{.CLI_ARGS}}
+
+  test:
+    desc: Run tests
+    cmds:
+      - docker-compose exec app go test -v -count=1 ./...
+
+  shell:
+    desc: Open a shell inside the app container
+    cmds:
+      - docker-compose exec app bash

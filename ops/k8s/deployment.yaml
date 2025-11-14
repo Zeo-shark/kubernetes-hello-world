@@ -1,0 +1,22 @@
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-hello-deployment # The name of the deployment
+  namespace: default
+spec:
+  replicas: 2 # Run 2 instances (Pods) of our application for high availability
+  selector:
+    matchLabels:
+      app: go-hello # This must match the labels on the Pods
+  template:
+    metadata:
+      labels:
+        app: go-hello # The label for our Pods
+    spec:
+      containers:
+      - name: go-hello-container
+        image: go-hello-world # The image we built in Step 3
+        imagePullPolicy: IfNotPresent # IMPORTANT: Tells K8s to use the local image, not pull from a remote registry
+        ports:
+        - containerPort: 8080 # The port our Go app listens on

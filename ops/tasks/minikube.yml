@@ -1,0 +1,32 @@
+# ops/tasks/build.yml
+version: '3'
+
+tasks:
+  default:
+    desc: "Deploy to Minikube (requires minikube and kubectl installed) and run the app service"
+    cmds:
+      - task: :build:production-podman
+      - task: load-image
+      - task: deploy
+      - task: run-app-service
+
+  deploy:
+    desc: "Deploy to Minikube (requires minikube and kubectl installed)"
+    cmds:
+      - kubectl apply -f ./ops/k8s/
+      - kubectl get all
+
+  load-image:
+    desc: "Load the app image into Minikube (requires minikube installed)"
+    cmds:
+      - minikube image load {{.PROJECT_NAME}}
+  
+  run-app-service:
+    desc: "Run the app service in Minikube (requires minikube and kubectl installed)"
+    cmds:
+      - minikube service go-hello-service --wait 10 --interval 2
+
+  delete:
+    desc: "Delete the deployed resources from Minikube"
+    cmds:
+      - kubectl delete -f ./ops/k8s/ --ignore-not-found

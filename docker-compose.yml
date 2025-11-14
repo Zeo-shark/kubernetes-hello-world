@@ -1,0 +1,26 @@
+name: go-hello-world
+
+services:
+  app:
+    image: golang:1.25-alpine
+    # image: ${COMPOSE_PROJECT_NAME}:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-local}
+    environment:
+      - DD_SERVICE=${DD_SERVICE:-golang-service}
+    ports:
+      - "8080:8080"
+    working_dir: /app
+    volumes:
+      - .:/app
+    entrypoint: ["/app/ops/scripts/entrypoint-dev.sh"]
+    command: ["go", "run", "main.go"]
+    healthcheck:
+      test: ["CMD-SHELL", "ping -c 3 localhost:8080 || exit 1"]
+      start_period: 10s
+      # start_interval: 1s <-- Does not work with podman
+      interval: 5s
+      timeout: 2s
+      retries: 2

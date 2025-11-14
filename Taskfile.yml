@@ -1,0 +1,18 @@
+# Taskfile.yml (root)
+version: '3'
+
+includes:
+  build: ./ops/tasks/build.yml
+  dev: ./ops/tasks/dev.yml
+  minikube: ./ops/tasks/minikube.yml
+
+vars:
+  PROJECT_NAME:
+    sh: "grep '^name:' docker-compose.yml | head -1 | sed 's/name: *//' | tr -d '[:space:]' || basename {{.USER_WORKING_DIR}}"
+
+tasks:
+  default:
+    silent: true
+    desc: "Show available tasks"
+    cmds:
+      - task --list

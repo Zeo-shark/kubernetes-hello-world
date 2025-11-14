@@ -1,0 +1,29 @@
+# ops/tasks/build.yml
+version: '3'
+
+tasks:
+  default:
+    desc: "Build image (default: docker for production)"
+    cmds:
+      - task: production-docker
+
+  production-docker:
+    aliases: [docker]
+    desc: "Build with Docker (supports --no-cache, --pull, etc.)"
+    cmds:
+      - docker build --target=production -t {{.PROJECT_NAME}} {{.CLI_ARGS}} .
+
+  production-podman:
+    aliases: [podman]
+    desc: "Build with Podman (supports --no-cache, --pull, etc.)"
+    cmds:
+      - podman build --target=production -t docker.io/library/{{.PROJECT_NAME}} {{.CLI_ARGS}} .
+
+  dev-compose:
+    desc: "Build with Docker Compose (supports --no-cache, --pull, --parallel, etc.)"
+    aliases: [compose, local]
+    cmds:
+      - docker-compose build {{.CLI_ARGS}}
+
+
+
